@@ -5,19 +5,41 @@ use wee_alloc::WeeAlloc;
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
 #[wasm_bindgen]
+
+struct SnakeCell(usize);
+struct Snake {
+    body: Vec<SnakeCell>
+}
+
+impl Snake{
+    fn new(spawn_index: usize) -> Snake {
+        Snake {
+            body: vec!(SnakeCell(spawn_index))
+        }
+    }
+}
+
+
+#[wasm_bindgen]
 pub struct World {
-    width: usize
+    width: usize,
+    snake: Snake
 }
 
 #[wasm_bindgen]
 impl World {
     pub fn new() -> World {
         World { 
-            width: 16 
+            width: 16, 
+            snake: Snake::new(10)
         }
     }
 
     pub fn get_width(&self) -> usize {
         self.width
+    }
+
+    pub fn get_snake_head(&self) -> usize {
+        self.snake.body[0].0    
     }
 }

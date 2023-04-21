@@ -29,5 +29,6 @@ init().then(_ => {
     }
 
     drawWorld();
+    console.log(world.get_snake_head());
 })
 
