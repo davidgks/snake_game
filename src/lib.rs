@@ -4,19 +4,20 @@ use wee_alloc::WeeAlloc;
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
-#[wasm_bindgen] // this is necessary to export it to the wasm
-pub fn greet(name: &str) {
-    alert(name);
-}
-
 #[wasm_bindgen]
-extern {
-    pub fn alert(s: &str);
-}
-
-pub Struct {
+pub struct World {
     width: usize
 }
 
+#[wasm_bindgen]
+impl World {
+    pub fn new() -> World {
+        World { 
+            width: 8 
+        }
+    }
 
-// we use the command "wasm-pack build --target web" to target the web (i.e. JS)
+    pub fn get_width(&self) -> usize {
+        self.width
+    }
+}
