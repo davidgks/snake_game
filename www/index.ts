@@ -6,7 +6,7 @@ init().then(_ => {
     const world = World.new();
     const worldWidth = world.get_width();
     // Canvas
-    const canvas = document.getElementById("snake-canvas");
+    const canvas = <HTMLCanvasElement> document.getElementById("snake-canvas");
     const ctx = canvas.getContext("2d");
 
     canvas.height = worldWidth * cellSize;  // = 16*10px ->16px
@@ -52,11 +52,12 @@ init().then(_ => {
 
     // every 100 milliseconds callback function is called
     function update() {
-        setInterval(() => {
+        setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawWorld();
             drawSnake();
             world.update();
+            requestAnimationFrame(update)
         }, 100);
     }
 
