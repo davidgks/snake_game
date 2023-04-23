@@ -28,7 +28,39 @@ init().then(_ => {
         ctx.stroke();
     }
 
-    drawWorld();
-    console.log(world.get_snake_head());
+    function drawSnake() {
+        const snakeIdx = world.get_snake_head();
+        const col = snakeIdx % worldWidth;
+        const row = Math.floor(snakeIdx / worldWidth);
+
+        ctx.beginPath();
+        ctx.fillRect(
+            cellSize * col, 
+            cellSize * row,
+            cellSize,
+            cellSize);
+
+        ctx.moveTo(col, row);
+
+        ctx.stroke();
+    }
+
+    function paint() {
+        drawWorld();
+        drawSnake();
+    }
+
+    // every 100 milliseconds callback function is called
+    function update() {
+        setInterval(() => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawWorld();
+            drawSnake();
+            world.update();
+        }, 100);
+    }
+
+    paint();
+    update();
 })
 
