@@ -1,28 +1,33 @@
 import init, { World } from "snake_game";
 
 init().then(_ => {
-    const cellSize = 20;    // 20px
+    // constants
+    const CELL_SIZE = 20;    // 20px
+    const WORLD_WIDTH = 8;
+
+    const snakeSpawnIdx = Date.now() % (WORLD_WIDTH * WORLD_WIDTH);
+
     // World
-    const world = World.new();
+    const world = World.new(WORLD_WIDTH, snakeSpawnIdx);
     const worldWidth = world.get_width();
     // Canvas
     const canvas = <HTMLCanvasElement> document.getElementById("snake-canvas");
     const ctx = canvas.getContext("2d");
 
-    canvas.height = worldWidth * cellSize;  // = 16*10px ->16px
-    canvas.width = worldWidth * cellSize;
+    canvas.height = worldWidth * CELL_SIZE;  // = 16*10px ->16px
+    canvas.width = worldWidth * CELL_SIZE;
 
     function drawWorld() {
         ctx.beginPath();
 
         for (let x=0; x < worldWidth+1; x++) {
-            ctx.moveTo(cellSize * x, 0);
-            ctx.lineTo(cellSize * x, worldWidth * cellSize);
+            ctx.moveTo(CELL_SIZE * x, 0);
+            ctx.lineTo(CELL_SIZE * x, worldWidth * CELL_SIZE);
         }
 
         for (let y=0; y < worldWidth+1; y++) {
-            ctx.moveTo(0, cellSize * y);
-            ctx.lineTo(worldWidth * cellSize, cellSize * y);
+            ctx.moveTo(0, CELL_SIZE * y);
+            ctx.lineTo(worldWidth * CELL_SIZE, CELL_SIZE * y);
         }
 
         ctx.stroke();
@@ -35,10 +40,10 @@ init().then(_ => {
 
         ctx.beginPath();
         ctx.fillRect(
-            cellSize * col, 
-            cellSize * row,
-            cellSize,
-            cellSize);
+            CELL_SIZE * col, 
+            CELL_SIZE * row,
+            CELL_SIZE,
+            CELL_SIZE);
 
         ctx.moveTo(col, row);
 
@@ -52,13 +57,14 @@ init().then(_ => {
 
     // every 100 milliseconds callback function is called
     function update() {
+        const fps = 10;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawWorld();
             drawSnake();
             world.update();
             requestAnimationFrame(update)
-        }, 100);
+        }, 1000 / fps);
     }
 
     paint();
