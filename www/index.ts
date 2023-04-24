@@ -1,4 +1,4 @@
-import init, { World } from "snake_game";
+import init, { World, Directions} from "snake_game";
 
 init().then((_: any) => {
     // constants
@@ -20,20 +20,22 @@ init().then((_: any) => {
     document.addEventListener("keydown", event => {
         switch(event.code) {
             case "ArrowUp":
+                world.change_snake_direction(Directions.Up);
                 console.log("switch direction to up!");
-                break
+                break;
             case "ArrowRight":
+                world.change_snake_direction(Directions.Right);
                 console.log("switch direction to right!");
-                break
+                break;
             case "ArrowDown":
+                world.change_snake_direction(Directions.Down);
                 console.log("switch direction to down!");
-                break
+                break;
             case "ArrowLeft":
+                world.change_snake_direction(Directions.Left);
                 console.log("switch direction to left!");
-                break   
-            
+                break;
         }
-        event.code
     })
 
     function drawWorld() {
@@ -76,7 +78,7 @@ init().then((_: any) => {
 
     // every 100 milliseconds callback function is called
     function update() {
-        const fps = 10;
+        const fps = 5;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawWorld();
