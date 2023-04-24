@@ -4,17 +4,27 @@ use wee_alloc::WeeAlloc;
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
+#[derive(PartialEq)]
+enum Directions {
+    Up, 
+    Right,
+    Down,
+    Left,
+}
+
 #[wasm_bindgen]
 
 struct SnakeCell(usize);
 struct Snake {
-    body: Vec<SnakeCell>
+    body: Vec<SnakeCell>,
+    direction: Directions,
 }
 
 impl Snake{
     fn new(spawn_index: usize) -> Snake {
         Snake {
-            body: vec!(SnakeCell(spawn_index))
+            body: vec!(SnakeCell(spawn_index)),
+            direction: Directions::Up,
         }
     }
 }
@@ -24,14 +34,14 @@ impl Snake{
 pub struct World {
     width: usize,
     size: usize,
-    snake: Snake
+    snake: Snake,
 }
 
 #[wasm_bindgen]
 impl World {
     pub fn new(width: usize, snake_idx: usize) -> World {
         World { 
-            width: width,
+            width,
             size: width * width,
             snake: Snake::new(snake_idx)
         }
@@ -45,17 +55,43 @@ impl World {
         self.snake.body[0].0    
     }
 
+
+
     pub fn update(&mut self) {
 
         let snake_idx = self.get_snake_head();
-        self.snake.body[0].0 = (snake_idx + 1) % self.size;
+        let (row, col) = self.index_to_cell(snake_idx);
+        let (row, col) = match self.snake.direction {
+            Directions::Left => {
+                (row, (col - 1) % self.width)
+            },
+            Directions::Right => {
+                (row, (col + 1) % self.width)
+            }, 
+            Directions::Up => {
+                ((row - 1) % self.width, col)
+            },
+            Directions::Down => {
+                ((row + 1) % self.width, col)
+            },  
+        };
+        self.snake.body[0].0 = self.cell_to_index(row, col);
 
-        // squares = {0, ..., 63} -> world.width * world.widthm - 1
-        // 66 % 64 = 2
+        let next_idx = self.cell_to_index(row, col);
+        self.set_snake_head(next_idx);
+    }
+
     
 
-        
+    fn set_snake_head(&mut self, idx: usize) {
+        self.snake.body[0].0 = idx;
+    }
 
-        
+    fn index_to_cell(&self, idx: usize) -> (usize, usize) {
+        (idx / self.width, idx % self.width)
+    }
+
+    fn cell_to_index(&self, row: usize, col: usize) -> usize {
+        (row * self.width) + col
     }
 }

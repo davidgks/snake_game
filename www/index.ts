@@ -1,10 +1,9 @@
 import init, { World } from "snake_game";
 
-init().then(_ => {
+init().then((_: any) => {
     // constants
     const CELL_SIZE = 20;    // 20px
     const WORLD_WIDTH = 8;
-
     const snakeSpawnIdx = Date.now() % (WORLD_WIDTH * WORLD_WIDTH);
 
     // World
@@ -16,6 +15,26 @@ init().then(_ => {
 
     canvas.height = worldWidth * CELL_SIZE;  // = 16*10px ->16px
     canvas.width = worldWidth * CELL_SIZE;
+
+    // Specify events you wanna listen to and respective callback function that should be executed when events occurs
+    document.addEventListener("keydown", event => {
+        switch(event.code) {
+            case "ArrowUp":
+                console.log("switch direction to up!");
+                break
+            case "ArrowRight":
+                console.log("switch direction to right!");
+                break
+            case "ArrowDown":
+                console.log("switch direction to down!");
+                break
+            case "ArrowLeft":
+                console.log("switch direction to left!");
+                break   
+            
+        }
+        event.code
+    })
 
     function drawWorld() {
         ctx.beginPath();
