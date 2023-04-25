@@ -1,6 +1,6 @@
 import init, { World, Directions} from "snake_game";
 
-init().then((_: any) => {
+init().then(wasm => {
     // constants
     const CELL_SIZE = 20;    // 20px
     const WORLD_WIDTH = 8;
@@ -15,6 +15,15 @@ init().then((_: any) => {
 
     canvas.height = worldWidth * CELL_SIZE;  // = 16*10px ->16px
     canvas.width = worldWidth * CELL_SIZE;
+
+    const snakeCellPtr = world.snake_cells();
+    const snakeLength = world.snake_length();
+    
+    const snakeCells = new Uint32Array( 
+        wasm.memory.buffer,
+        snakeCellPtr,
+        snakeLength,
+    )
 
     // Specify events you wanna listen to and respective callback function that should be executed when events occurs
     document.addEventListener("keydown", event => {

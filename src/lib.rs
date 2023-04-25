@@ -15,16 +15,23 @@ pub enum Directions {
 
 #[wasm_bindgen]
 
-struct SnakeCell(usize);
+pub struct SnakeCell(usize);
 struct Snake {
     body: Vec<SnakeCell>,
     direction: Directions,
 }
 
 impl Snake{
-    fn new(spawn_index: usize) -> Snake {
+    fn new(spawn_index: usize, size: usize) -> Snake {
+
+        let mut body = vec!();
+
+        for i in 0..size {
+            body.push(SnakeCell(spawn_index - i));
+        }
+
         Snake {
-            body: vec!(SnakeCell(spawn_index)),
+            body,
             direction: Directions::Right,
         }
     }
@@ -44,7 +51,7 @@ impl World {
         World { 
             width,
             size: width * width,
-            snake: Snake::new(snake_idx)
+            snake: Snake::new(snake_idx, 3)
         }
     }
 
@@ -57,19 +64,27 @@ impl World {
     }
 
     pub fn change_snake_direction(&mut self, direction: Directions) {
-        
         self.snake.direction = direction;
-        // four cases 
-
-        // case "ArrowUp" -> self.snake {direction: Direction::Up}
-        //      self.update()
-
-        // case "ArrowRight" -> self.snake {direction: Direction::Right}
-
-        // case "ArrowDown" -> self.snake {direction: Direction::Down}
-
-        // case "ArrowLeft" -> self.snake {direction: Direction::Left}
     }
+
+    pub fn snake_length(&self) -> usize {
+        self.snake.body.len()
+    }
+
+    // *const is raw pointer
+    // borrowing rules do not apply to it
+    pub fn snake_cells(&self) -> *const SnakeCell {
+        self.snake.body.as_ptr()
+    }
+
+    pub fn oopsie(&mut self) {
+        self.snake.body = vec![SnakeCell(2028)]
+    }
+
+    // cannot return a reference to JS because of borrowing rules
+    // pub fn snake_cells(&self) -> Vec<SnakeCell> {
+    //     self.snake.body
+    // }
 
     pub fn update(&mut self) {
 
