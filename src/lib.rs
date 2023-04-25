@@ -77,10 +77,6 @@ impl World {
         self.snake.body.as_ptr()
     }
 
-    pub fn oopsie(&mut self) {
-        self.snake.body = vec![SnakeCell(2028)]
-    }
-
     // cannot return a reference to JS because of borrowing rules
     // pub fn snake_cells(&self) -> Vec<SnakeCell> {
     //     self.snake.body

@@ -25,6 +25,7 @@ init().then(wasm => {
         snakeLength,
     )
 
+
     // Specify events you wanna listen to and respective callback function that should be executed when events occurs
     document.addEventListener("keydown", event => {
         switch(event.code) {
@@ -64,6 +65,30 @@ init().then(wasm => {
     }
 
     function drawSnake() {
+
+        // Get snake cells
+        const snakeCells = new Uint32Array(
+            wasm.memory.buffer,
+            world.snake_cells(),
+            world.snake_length(),
+        );
+
+        snakeCells.forEach(cell => {
+            const col = cell % worldWidth;
+            const row = Math.floor(cell / worldWidth);
+
+            ctx.beginPath();
+            ctx.fillRect(
+                CELL_SIZE * col, 
+                CELL_SIZE * row,
+                CELL_SIZE,
+                CELL_SIZE);
+
+            ctx.moveTo(col, row);
+
+            ctx.stroke();
+        })
+
         const snakeIdx = world.get_snake_head();
         const col = snakeIdx % worldWidth;
         const row = Math.floor(snakeIdx / worldWidth);
