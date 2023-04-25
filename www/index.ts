@@ -73,9 +73,11 @@ init().then(wasm => {
             world.snake_length(),
         );
 
-        snakeCells.forEach(cell => {
+        snakeCells.forEach((cell, i) => {
             const col = cell % worldWidth;
             const row = Math.floor(cell / worldWidth);
+
+            ctx.fillStyle = i === 0 ? "#7878db" : "#000000";
 
             ctx.beginPath();
             ctx.fillRect(
@@ -117,7 +119,7 @@ init().then(wasm => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawWorld();
             drawSnake();
-            world.update();
+            world.step();
             requestAnimationFrame(update)
         }, 1000 / fps);
     }
