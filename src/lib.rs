@@ -13,9 +13,9 @@ pub enum Directions {
     Left,
 }
 
-#[wasm_bindgen]
-
+#[derive(Clone)]
 pub struct SnakeCell(usize);
+
 struct Snake {
     body: Vec<SnakeCell>,
     direction: Directions,
@@ -83,29 +83,21 @@ impl World {
     // }
 
     pub fn step(&mut self) {
+        let temp = self.snake.body.clone(); // copies the vector
         let next_cell = self.gen_next_snake_cell();
         self.snake.body[0] = next_cell;
+
+        let len = self.snake_length();
+        for i in 1..len {
+            self.snake.body[i] = SnakeCell(temp[i-1].0);
+        }
+        
     }
 
     fn gen_next_snake_cell(&self) -> SnakeCell {
         let snake_idx = self.get_snake_head();
         let row = snake_idx / self.width;
         let col = snake_idx - row * self.width;
-
-        // return match self.snake.direction {
-        //     Directions::Left => {
-        //         SnakeCell((row * self.width) + (snake_idx - 1) % self.width)
-        //     },
-        //     Directions::Right => {
-        //         SnakeCell((row * self.width) + (snake_idx + 1) % self.width)
-        //     }, 
-        //     Directions::Up => {
-        //         SnakeCell((snake_idx - self.width) % self.size)
-        //     },
-        //     Directions::Down => {
-        //         SnakeCell((snake_idx + self.width) % self.size)
-        //     },  
-        // };
 
         return match self.snake.direction {
             Directions::Left => {
@@ -144,6 +136,6 @@ impl World {
                     SnakeCell(snake_idx + self.width)
                 }
             },  
-        } 
+        }
     }
 }
