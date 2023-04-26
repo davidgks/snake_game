@@ -18,7 +18,7 @@ pub enum Directions {
     Left,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct SnakeCell(usize);
 
 struct Snake {
@@ -56,13 +56,21 @@ pub struct World {
 impl World {
     pub fn new(width: usize, snake_idx: usize) -> World {
 
+        let snake = Snake::new(snake_idx, 3);
         let size = width * width;
-        let reward_cell = rnd(size) % size;
+        let mut reward_cell;
+
+        loop {
+            reward_cell = rnd(size) % size;
+            // we check if reward cell is contained in snake body -> if yes, we generate a new one
+            if !snake.body.contains(&SnakeCell(reward_cell)) { break; }
+            
+        }
 
         World { 
             width,
             size,
-            snake: Snake::new(snake_idx, 3),
+            snake,
             next_cell: None,
             reward_cell,
         }
@@ -127,9 +135,9 @@ impl World {
 
         return match direction {
             Directions::Left => {
-                let threshold = row * self.width - 1;
+                let threshold = row * self.width;
                 if snake_idx == threshold {
-                    SnakeCell(threshold * (self.width - 1))
+                    SnakeCell(threshold + (self.width - 1))
                 } 
                 else {
                     SnakeCell(snake_idx - 1)
@@ -154,11 +162,10 @@ impl World {
                 }
             },
             Directions::Down => {
-                let threshold = self.size + col;
-                if snake_idx == threshold {
-                    SnakeCell(col)
-                } 
-                else {
+                let treshold = snake_idx + ((self.width - row) * self.width);
+                if snake_idx + self.width == treshold {
+                    SnakeCell(treshold - ((row + 1) * self.width))
+                } else {
                     SnakeCell(snake_idx + self.width)
                 }
             },  
