@@ -88,7 +88,7 @@ init().then(wasm => {
             world.snake_cells(),
             world.snake_length(),
         );
-
+        console.log(snakeCells);
         snakeCells.forEach((cell, i) => {
             const col = cell % worldWidth;
             const row = Math.floor(cell / worldWidth);
@@ -129,7 +129,7 @@ init().then(wasm => {
 
     // every 100 milliseconds callback function is called
     function update() {
-        const fps = 5;
+        const fps = 2;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             paint();
