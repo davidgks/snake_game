@@ -4,7 +4,7 @@ import {rnd} from "./utils/rnd";
 init().then(wasm => {
     // constants
     const CELL_SIZE = 20;    // 20px
-    const WORLD_WIDTH = 8;
+    const WORLD_WIDTH = 4;
     const snakeSpawnIdx = rnd(WORLD_WIDTH * WORLD_WIDTH);
 
     // World
@@ -79,6 +79,10 @@ init().then(wasm => {
             CELL_SIZE
         );
         ctx.stroke();
+
+        if (rewardCell === 1000) {
+            alert("You won the game!");
+        };
     }
 
     function drawSnake() {
