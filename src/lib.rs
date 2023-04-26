@@ -4,6 +4,11 @@ use wee_alloc::WeeAlloc;
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
+#[wasm_bindgen(module="/www/utils/rnd.js")]
+extern {
+    fn rnd(max: usize) -> usize;
+}
+
 #[wasm_bindgen]
 #[derive(PartialEq)]
 pub enum Directions {
@@ -50,12 +55,16 @@ pub struct World {
 #[wasm_bindgen]
 impl World {
     pub fn new(width: usize, snake_idx: usize) -> World {
+
+        let size = width * width;
+        let reward_cell = rnd(size) % size;
+
         World { 
             width,
-            size: width * width,
+            size,
             snake: Snake::new(snake_idx, 3),
             next_cell: None,
-            reward_cell: 63,
+            reward_cell,
         }
     }
 
