@@ -13,7 +13,7 @@ pub enum Directions {
     Left,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct SnakeCell(usize);
 
 struct Snake {
@@ -43,6 +43,8 @@ pub struct World {
     width: usize,
     size: usize,
     snake: Snake,
+    next_cell: Option<SnakeCell>,
+    reward_cell: usize,
 }
 
 #[wasm_bindgen]
@@ -51,7 +53,9 @@ impl World {
         World { 
             width,
             size: width * width,
-            snake: Snake::new(snake_idx, 3)
+            snake: Snake::new(snake_idx, 3),
+            next_cell: None,
+            reward_cell: 63,
         }
     }
 
@@ -59,15 +63,25 @@ impl World {
         self.width
     }
 
+    pub fn reward_cell(&self) -> usize {
+        self.reward_cell
+    }
+
     pub fn get_snake_head(&self) -> usize {
         self.snake.body[0].0    
     }
 
     pub fn change_snake_direction(&mut self, direction: Directions) {
+
+        let next_cell = self.gen_next_snake_cell(&direction);
+
+        if self.snake.body[1].0 == next_cell.0 { return; }
+
+        self.next_cell = Some(next_cell);
         self.snake.direction = direction;
     }
 
-    pub fn snake_length(&self) -> usize {
+    pub fn snake_length(&mut self) -> usize {
         self.snake.body.len()
     }
 
@@ -77,15 +91,18 @@ impl World {
         self.snake.body.as_ptr()
     }
 
-    // cannot return a reference to JS because of borrowing rules
-    // pub fn snake_cells(&self) -> Vec<SnakeCell> {
-    //     self.snake.body
-    // }
-
     pub fn step(&mut self) {
         let temp = self.snake.body.clone(); // copies the vector
-        let next_cell = self.gen_next_snake_cell();
-        self.snake.body[0] = next_cell;
+
+        match self.next_cell {
+            Some(cell) => { 
+                self.snake.body[0] = cell;
+                self.next_cell = None;
+            },
+            None => {
+                self.snake.body[0] = self.gen_next_snake_cell(&self.snake.direction);
+            }
+        }
 
         let len = self.snake_length();
         for i in 1..len {
@@ -94,12 +111,12 @@ impl World {
         
     }
 
-    fn gen_next_snake_cell(&self) -> SnakeCell {
+    fn gen_next_snake_cell(&self, direction: &Directions) -> SnakeCell {
         let snake_idx = self.get_snake_head();
         let row = snake_idx / self.width;
         let col = snake_idx - row * self.width;
 
-        return match self.snake.direction {
+        return match direction {
             Directions::Left => {
                 let threshold = row * self.width - 1;
                 if snake_idx == threshold {

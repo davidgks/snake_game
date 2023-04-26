@@ -64,8 +64,23 @@ init().then(wasm => {
         ctx.stroke();
     }
 
-    function drawSnake() {
+    function drawReward() {
+        const rewardCell = world.reward_cell();
+        const col = rewardCell % worldWidth;
+        const row = Math.floor(rewardCell / worldWidth);
 
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.fillRect(
+            CELL_SIZE * col, 
+            CELL_SIZE * row,
+            CELL_SIZE,
+            CELL_SIZE
+        );
+        ctx.stroke();
+    }
+
+    function drawSnake() {
         // Get snake cells
         const snakeCells = new Uint32Array(
             wasm.memory.buffer,
@@ -77,17 +92,15 @@ init().then(wasm => {
             const col = cell % worldWidth;
             const row = Math.floor(cell / worldWidth);
 
-            ctx.fillStyle = i === 0 ? "#7878db" : "#000000";
-
             ctx.beginPath();
+            ctx.fillStyle = i === 0 ? "#7878db" : "#000000";
             ctx.fillRect(
                 CELL_SIZE * col, 
                 CELL_SIZE * row,
                 CELL_SIZE,
-                CELL_SIZE);
-
+                CELL_SIZE
+            );
             ctx.moveTo(col, row);
-
             ctx.stroke();
         })
 
@@ -96,20 +109,21 @@ init().then(wasm => {
         const row = Math.floor(snakeIdx / worldWidth);
 
         ctx.beginPath();
+        ctx.fillStyle = "#7878db";
         ctx.fillRect(
             CELL_SIZE * col, 
             CELL_SIZE * row,
             CELL_SIZE,
-            CELL_SIZE);
-
+            CELL_SIZE
+        );
         ctx.moveTo(col, row);
-
         ctx.stroke();
     }
 
     function paint() {
         drawWorld();
         drawSnake();
+        drawReward();
     }
 
     // every 100 milliseconds callback function is called
@@ -117,8 +131,7 @@ init().then(wasm => {
         const fps = 5;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawWorld();
-            drawSnake();
+            paint();
             world.step();
             requestAnimationFrame(update)
         }, 1000 / fps);
