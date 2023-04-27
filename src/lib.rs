@@ -86,6 +86,14 @@ impl World {
         reward_cell
     }
 
+    pub fn change_status(&mut self, status: Option<GameStatus>) {
+        self.status = status;
+    }
+
+    pub fn start_game(&mut self) {
+        self.status = Some(GameStatus::Playing);
+    }
+
     pub fn get_width(&self) -> usize {
         self.width
     }

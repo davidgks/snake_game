@@ -1,15 +1,19 @@
-import init, { World, Directions} from "snake_game";
+import init, { World, Directions, GameStatus} from "snake_game";
 import {rnd} from "./utils/rnd";
 
 init().then(wasm => {
     // constants
     const CELL_SIZE = 20;    // 20px
-    const WORLD_WIDTH = 4;
+    const WORLD_WIDTH = 8;
     const snakeSpawnIdx = rnd(WORLD_WIDTH * WORLD_WIDTH);
 
     // World
     const world = World.new(WORLD_WIDTH, snakeSpawnIdx);
     const worldWidth = world.get_width();
+
+    // Start game
+    const gameControlBtn = document.getElementById("game-control-btn");
+
     // Canvas
     const canvas = <HTMLCanvasElement> document.getElementById("snake-canvas");
     const ctx = canvas.getContext("2d");
@@ -25,6 +29,11 @@ init().then(wasm => {
         snakeCellPtr,
         snakeLength,
     )
+
+    gameControlBtn.addEventListener("click", _ => {
+        world.start_game();
+        play();
+    })
 
 
     // Specify events you wanna listen to and respective callback function that should be executed when events occurs
@@ -48,6 +57,10 @@ init().then(wasm => {
                 break;
         }
     })
+
+    function changeGameStatus() {
+        world.change_status(GameStatus.Playing);
+    }
 
     function drawWorld() {
         ctx.beginPath();
@@ -132,17 +145,17 @@ init().then(wasm => {
     }
 
     // every 100 milliseconds callback function is called
-    function update() {
+    function play() {
         const fps = 2;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             paint();
             world.step();
-            requestAnimationFrame(update)
+            requestAnimationFrame(play)
         }, 1000 / fps);
     }
 
+
     paint();
-    update();
 })
 
