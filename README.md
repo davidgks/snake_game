@@ -77,16 +77,5 @@ The built files are emitted to `www/public`. Serve that directory with any stati
 
 ---
 
-## Contributing
 
-Contributions are welcome — open an issue or a PR with a short description and any relevant details.
-
----
-
-## License
-
-This project does not include a license file. Add a `LICENSE` file to clarify terms if you plan to distribute.
-
----
-
-If you want, I can add a short section describing the game controls and polishing steps (score, sound, mobile support). 💬
+Have fun playing :)
